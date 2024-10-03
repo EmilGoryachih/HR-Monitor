@@ -30,7 +30,7 @@ async def create_user(db: AsyncSession, user: User):
     await db.commit()
     await db.refresh(db_user)
 
-    return UserBasicResponse(id=db_user.id)
+    return UserBasicResponse(id=db_user.id, name=db_user.name)
 
 
 async def get_all_users(db: AsyncSession):

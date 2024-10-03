@@ -10,12 +10,12 @@ import sys
 import pathlib
 from alembic import context
 
-from ..models.base import BaseModel
+from models.base import BaseModel
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
-from ..models.dtoModels.userDTO import User
-from ..models.dbModels.User.user import UserModel
+from models.dtoModels.userDTO import User
+from models.dbModels.User.user import UserModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

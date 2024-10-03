@@ -18,8 +18,6 @@ class ModeEnum(str, Enum):
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "TuristApp"
-
     DATABASE_USER: str = "postgres"
     DATABASE_PASSWORD: str = "emilgan12"
     DATABASE_HOST: str = "localhost"
@@ -27,21 +25,20 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = "hr-monitor"
     ASYNC_DATABASE_URI: PostgresDsn | None = None
 
-    print(ASYNC_DATABASE_URI)
-
     @field_validator("ASYNC_DATABASE_URI", mode="after")
-    def assemble_db_connection(self, v: str | None, info: FieldValidationInfo) -> Any:
+    def assemble_db_connection(cls, v: str | None, info: FieldValidationInfo) -> Any:
         if not v:
             return PostgresDsn.build(
                 scheme="postgresql+asyncpg",
                 username=info.data["DATABASE_USER"],
                 password=info.data["DATABASE_PASSWORD"],
                 host=info.data["DATABASE_HOST"],
-                port=info.data["DATABASE_PORT"],
-                path=info.data["DATABASE_NAME"],
+                port=info.data["DATABASE_PORT"],  # Ensure this is passed as an integer
+                path=f'{info.data["DATABASE_NAME"]}',
             )
-        print(v)
         return v
 
 
 settings = Settings()
+
+print(settings.ASYNC_DATABASE_URI)
