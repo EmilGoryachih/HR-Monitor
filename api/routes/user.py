@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.dtoModels.userDTO import User
+from models.dtoModels.userDTO import UserDTO
 from models.dbModels.User.crud import create_user, get_all_users, get_user_by_email
 from models.dbModels.User.crud import UserBasicResponse, UserResponse
 from models.dbModels.User.crud import get_all_users
@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=UserResponse)
-async def create_user_endpoint(user: User, db: AsyncSession = Depends(fastapi_get_db)):
+async def create_user_endpoint(user: UserDTO, db: AsyncSession = Depends(fastapi_get_db)):
     try:
         existing_user = await get_user_by_email(db, user.email)
         if existing_user is not None:
