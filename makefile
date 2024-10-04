@@ -2,7 +2,7 @@
 
 .PHONY: run
 run:
-	@cd /code && uvicorn main:app --reload --host 0.0.0.0 --port 80
+	@uvicorn main:app --reload --host 0.0.0.0 --port 80
 
 .PHONY: init-alembic
 init-alembic:

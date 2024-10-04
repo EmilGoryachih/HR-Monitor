@@ -4,7 +4,7 @@ from environs import Env
 
 import uvicorn
 
-from .init_db import init_db
+from init_db import init_db
 
 from api.main import api_router
 
@@ -25,4 +25,4 @@ async def on_startup():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=5000)
