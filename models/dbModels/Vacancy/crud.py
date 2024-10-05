@@ -34,7 +34,7 @@ async def create_vacancy(db: AsyncSession, vacancy: VacancyDTO):
     return VacancyResponse(id=db_vacancy.id, name=db_vacancy.name)
 
 
-async def respond_to_vacancy(db: AsyncSession, vacancy_id: uuid.UUID, user_id: uuid.UUID):
+async def respond_to_vacancy(db: AsyncSession, vacancy_id: uuid.UUID, user_id: uuid.UUID, resume_id: uuid.UUID):
     # Проверим, существует ли вакансия
     statement = select(VacancyModel).where(VacancyModel.id == vacancy_id)
     result = await db.execute(statement)
@@ -42,7 +42,7 @@ async def respond_to_vacancy(db: AsyncSession, vacancy_id: uuid.UUID, user_id: u
 
     if vacancy:
         # Связываем пользователя и вакансию через промежуточную таблицу
-        stmt = insert(vacancy_user_association).values(user_id=user_id, vacancy_id=vacancy_id)
+        stmt = insert(vacancy_user_association).values(user_id=user_id, vacancy_id=vacancy_id, resume_id=resume_id)
         await db.execute(stmt)
         await db.commit()
         return True

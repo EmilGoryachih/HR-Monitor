@@ -27,35 +27,3 @@ async def create_vacancy_endpoint(vacancy: VacancyDTO, db: AsyncSession = Depend
         print(f"Error while creating vacancy: {e}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-
-@router.post("/respond/{vacancy_id}")
-async def respond_to_vacancy_endpoint(vacancy_id: UUID, db: AsyncSession = Depends(fastapi_get_db),
-                                      current_user: UserBasicResponse = Depends(get_current_user)):
-    try:
-        response = await respond_to_vacancy(db, vacancy_id, current_user.id)
-        if response:
-            return {"detail": "Successfully responded to the vacancy"}
-        raise HTTPException(status_code=404, detail="Vacancy not found")
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        print(f"Error while responding to vacancy: {e}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
-@router.get("/respondedUsers/{vacancy_id}", response_model=list[UserBasicResponse])
-async def get_responded_users_endpoint(vacancy_id: UUID, db: AsyncSession = Depends(fastapi_get_db),
-                                       current_user: UserBasicResponse = Depends(get_current_employer_user)):
-    try:
-        # Получаем список пользователей, откликнувшихся на вакансию
-        responded_users = await get_responded_users(db, vacancy_id)
-
-        if not responded_users:
-            raise HTTPException(status_code=404, detail="No users found for this vacancy")
-
-        return responded_users
-    except HTTPException as http_ex:
-        raise http_ex
-    except Exception as e:
-        print(f"Error while fetching responded users: {e}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

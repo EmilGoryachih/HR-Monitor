@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.dtoModels.userDTO import UserDTO
-from models.dbModels.User.crud import create_user, get_all_users, get_user_by_email
+from models.dbModels.User.crud import create_user, get_all_users, get_user_by_email, get_user_by_id
 from models.dbModels.User.crud import UserBasicResponse, UserResponse
 from models.dbModels.User.crud import get_all_users
-from .auth import get_current_employer_user
+from .auth import get_current_employer_user, get_current_user
 from db.session import fastapi_get_db
 
 router = APIRouter()
@@ -36,4 +36,15 @@ async def get_users_endpoint(
 ):
     users = await get_all_users(db)
     return users
+
+
+@router.get("/")
+async def get_users_endpoint(
+    db: AsyncSession = Depends(fastapi_get_db),
+    current_user: UserBasicResponse = Depends(get_current_user),
+):
+    users = await get_user_by_id(db, current_user.id)
+    return users
+
+
 

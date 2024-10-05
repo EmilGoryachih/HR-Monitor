@@ -33,6 +33,6 @@ class ResumeDTO(BaseModel):
     specialization: List[str] = []
     skills: List[str] = []
     about_me: Optional[constr(max_length=1000)] = None
-    courses: List[CourseDTO] = []
-    work_experience: List[WorkDTO] = []
+    courses: Optional[List[CourseDTO]] = None
+    work_experience: Optional[List[WorkDTO]] = None
 

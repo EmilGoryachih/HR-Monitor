@@ -15,5 +15,6 @@ vacancy_user_association = Table(
     BaseModel.metadata,
     Column('vacancy_id', UUID(as_uuid=True), ForeignKey('vacancies.id'), primary_key=True),
     Column('user_id', UUID(as_uuid=True), ForeignKey('users.id'), primary_key=True),
+    Column('resume_id', UUID(as_uuid=True), nullable=False),
     Column('status', SQLAEnum(Status), nullable=True),  # Название для колонки "status"
 )
