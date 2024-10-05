@@ -2,8 +2,10 @@ import uuid
 from sqlalchemy import Column, String, Enum as SQLAEnum, Integer, ARRAY
 from sqlalchemy.dialects.postgresql import UUID
 from enum import Enum
+from sqlalchemy.orm import relationship
 
 from models.base import BaseModel
+from models.dbModels.vacancy_user_relation import vacancy_user_association
 
 
 class Busyness(str, Enum):
@@ -31,4 +33,7 @@ class VacancyModel(BaseModel):
     salary = Column(Integer, nullable=True)
     experience = Column(SQLAEnum(Experience), nullable=True)
     busyness = Column(ARRAY(SQLAEnum(Busyness)), nullable=True)
+
+    applicants = relationship('UserModel', secondary=vacancy_user_association, back_populates='vacancies')
+
 

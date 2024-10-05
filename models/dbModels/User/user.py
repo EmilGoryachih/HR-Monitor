@@ -3,9 +3,10 @@ from sqlalchemy import Column, String, Date, Enum as SQLAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from enum import Enum
 from passlib.context import CryptContext
+from sqlalchemy.orm import relationship
 
 from models.base import BaseModel
-
+from models.dbModels.vacancy_user_relation import vacancy_user_association
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -28,6 +29,8 @@ class UserModel(BaseModel):
     password = Column(String(length=100), nullable=False)
     birth_date = Column(Date, nullable=True)
     role = Column(SQLAEnum(RoleEnum), default=RoleEnum.EMPLOYEE, nullable=False)
+
+    vacancies = relationship('VacancyModel', secondary=vacancy_user_association, back_populates='applicants')
 
     def set_password(self, password: str):
         self.password = pwd_context.hash(password)

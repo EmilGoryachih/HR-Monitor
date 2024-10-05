@@ -16,6 +16,7 @@ sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 from models.dbModels.User.user import UserModel
 from models.dbModels.Vacancy.vacancy import VacancyModel
+from models.dbModels.vacancy_user_relation import vacancy_user_association
 
 
 # this is the Alembic Config object, which provides
