@@ -16,6 +16,7 @@ sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 from models.dbModels.Vacancy.vacancy import VacancyModel
 from models.dbModels.User.user import UserModel
 from models.dbModels.Vacancy_user import vacancy_user_relation
+from models.dbModels.Resume.resume import ResumeModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -1,11 +1,14 @@
 import uuid
+from typing import List
+
 from sqlalchemy import Column, String, Date, Enum as SQLAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from enum import Enum
 from passlib.context import CryptContext
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 
 from models.base import BaseModel
+from models.dbModels import Resume
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -31,6 +34,7 @@ class UserModel(BaseModel):
 
     responded_vacancies = relationship("VacancyModel", secondary="vacancy_user_association",
                                        back_populates="responded_users")
+    resumes = relationship("ResumeModel", back_populates="user", cascade="all, delete-orphan")
 
     def set_password(self, password: str):
         self.password = pwd_context.hash(password)
