@@ -6,7 +6,6 @@ from .user import UserModel, RoleEnum
 from ...dtoModels.userDTO import UserDTO
 from sqlalchemy.future import select
 
-
 from pydantic import BaseModel
 
 
@@ -34,7 +33,7 @@ async def create_user(db: AsyncSession, user: UserDTO):
         phone=user.phone,
         birth_date=user.dateOfBirth,
         email=user.email,
-        role=user.role,  # Роль передаётся из объекта User
+        role=RoleEnum.EMPLOYEE,
     )
     db_user.set_password(user.password)  # Хеширование пароля
     db.add(db_user)
@@ -51,7 +50,7 @@ async def get_all_users(db: AsyncSession):
     return users
 
 
-async def get_user_by_id(db: AsyncSession, id: uuid.UUID) -> UserBasicResponse | None:
+async def get_user_by_id(db: AsyncSession, id: uuid.UUID):
     statement = select(UserModel).where(id == UserModel.id)
     result = await db.execute(statement)
     user = result.scalar_one_or_none()
@@ -72,3 +71,15 @@ async def get_user_by_email(db: AsyncSession, email: str):
     return None
 
 
+async def assign_role(db: AsyncSession, id: uuid.UUID, role: RoleEnum):
+    statement = select(UserModel).where(id == UserModel.id)
+    result = await db.execute(statement)
+    user = result.scalar_one_or_none()
+
+    if user:
+        user.role = role
+        await db.commit()
+        await db.refresh(user)
+        return role
+
+    return None

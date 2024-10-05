@@ -44,29 +44,30 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 
 async def authenticate_user_by_email(db: AsyncSession, email: str, password: str):
-    user = await get_user_by_email(db, email)  # Метод должен возвращать объект UserModel
+    user = await get_user_by_email(db, email)
     if not user:
         return False
-    if not verify_password(password, user.password):  # Проверяем пароль
+    if not verify_password(password, user.password):
         return False
-    return user  # Возвращаем объект UserModel
+    return user
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme), db: AsyncSession = Depends(fastapi_get_db)):
-    token = credentials.credentials  # Получаем токен из заголовков Authorization
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+                           db: AsyncSession = Depends(fastapi_get_db)):
+    token = credentials.credentials
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])  # Декодируем токен
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = await get_user_by_email(db, username)  # Получаем пользователя по имени
+    user = await get_user_by_email(db, username)
     if user is None:
         raise credentials_exception
     return user

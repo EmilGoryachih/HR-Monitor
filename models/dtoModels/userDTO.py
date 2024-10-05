@@ -9,7 +9,6 @@ class UserDTO(BaseModel):
     surname: str
     email: str
     password: str
-    role: RoleEnum = RoleEnum.EMPLOYEE
     phone: str
     dateOfBirth: datetime.date
 
