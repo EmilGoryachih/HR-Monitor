@@ -6,7 +6,6 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import relationship
 
 from models.base import BaseModel
-from models.dbModels.vacancy_user_relation import vacancy_user_association
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -30,7 +29,8 @@ class UserModel(BaseModel):
     birth_date = Column(Date, nullable=True)
     role = Column(SQLAEnum(RoleEnum), default=RoleEnum.EMPLOYEE, nullable=False)
 
-    responded_vacancies = relationship("VacancyModel", secondary="vacancy_user_association", back_populates="responded_users")
+    responded_vacancies = relationship("VacancyModel", secondary="vacancy_user_association",
+                                       back_populates="responded_users")
 
     def set_password(self, password: str):
         self.password = pwd_context.hash(password)

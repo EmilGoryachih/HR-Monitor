@@ -7,7 +7,7 @@ from sqlalchemy.orm import joinedload
 
 from .vacancy import VacancyModel
 from ..User.crud import UserBasicResponse
-from ..vacancy_user_relation import vacancy_user_association
+from models.dbModels.Vacancy_user.vacancy_user_relation import vacancy_user_association
 from ...dtoModels.vacancyDTO import VacancyDTO
 
 

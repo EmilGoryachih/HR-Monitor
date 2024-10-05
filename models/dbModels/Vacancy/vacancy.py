@@ -5,7 +5,7 @@ from enum import Enum
 from sqlalchemy.orm import relationship
 
 from models.base import BaseModel
-from models.dbModels.vacancy_user_relation import vacancy_user_association
+from models.dbModels.Vacancy_user.vacancy_user_relation import vacancy_user_association
 
 
 class Busyness(str, Enum):
@@ -34,6 +34,5 @@ class VacancyModel(BaseModel):
     experience = Column(SQLAEnum(Experience), nullable=True)
     busyness = Column(ARRAY(SQLAEnum(Busyness)), nullable=True)
 
-    responded_users = relationship("UserModel", secondary=vacancy_user_association, back_populates="responded_vacancies")
-
-
+    responded_users = relationship("UserModel", secondary=vacancy_user_association,
+                                   back_populates="responded_vacancies")

@@ -1,4 +1,3 @@
-import alembic_autogenerate_enums
 import asyncio
 
 from logging.config import fileConfig
@@ -14,10 +13,9 @@ from models.base import BaseModel
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
-from models.dbModels.User.user import UserModel
 from models.dbModels.Vacancy.vacancy import VacancyModel
-from models.dbModels.vacancy_user_relation import vacancy_user_association
-
+from models.dbModels.User.user import UserModel
+from models.dbModels.Vacancy_user import vacancy_user_relation
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
