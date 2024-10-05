@@ -1,9 +1,11 @@
 import uuid
 
+from fastapi import HTTPException
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 from sqlalchemy.orm import joinedload
+from starlette import status
 
 from .vacancy import VacancyModel
 from ..User.crud import UserBasicResponse
@@ -35,13 +37,11 @@ async def create_vacancy(db: AsyncSession, vacancy: VacancyDTO):
 
 
 async def respond_to_vacancy(db: AsyncSession, vacancy_id: uuid.UUID, user_id: uuid.UUID, resume_id: uuid.UUID):
-    # Проверим, существует ли вакансия
     statement = select(VacancyModel).where(VacancyModel.id == vacancy_id)
     result = await db.execute(statement)
     vacancy = result.scalar_one_or_none()
 
     if vacancy:
-        # Связываем пользователя и вакансию через промежуточную таблицу
         stmt = insert(vacancy_user_association).values(user_id=user_id, vacancy_id=vacancy_id, resume_id=resume_id)
         await db.execute(stmt)
         await db.commit()
@@ -51,7 +51,6 @@ async def respond_to_vacancy(db: AsyncSession, vacancy_id: uuid.UUID, user_id: u
 
 
 async def get_responded_users(db: AsyncSession, vacancy_id: uuid.UUID) -> list[UserBasicResponse]:
-    # Проверим, существует ли вакансия
     statement = select(VacancyModel).where(VacancyModel.id == vacancy_id).options(
         joinedload(VacancyModel.responded_users)  # Загрузка связанных пользователей
     )
@@ -59,11 +58,56 @@ async def get_responded_users(db: AsyncSession, vacancy_id: uuid.UUID) -> list[U
     vacancy = result.scalars().first()  # Изменение здесь
 
     if vacancy:
-        # Получаем всех пользователей, откликнувшихся на вакансию
         users = vacancy.responded_users
         return [UserBasicResponse(id=user.id, name=user.name, surname=user.surname, phone=user.phone, email=user.email, role=user.role)
                 for user in users]
 
     return []
+
+
+async def get_vacancy_by_id(db: AsyncSession, vacancy_id: uuid.UUID) -> VacancyResponse:
+    statement = select(VacancyModel).where(VacancyModel.id == vacancy_id)
+    result = await db.execute(statement)
+    vacancy = result.scalar_one_or_none()
+
+    if vacancy is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vacancy not found")
+
+    return vacancy
+
+
+async def update_vacancy(db: AsyncSession, vacancy_id: uuid.UUID, vacancy_data: VacancyDTO, user_id: uuid.UUID):
+    statement = select(VacancyModel).where(VacancyModel.id == vacancy_id)
+    result = await db.execute(statement)
+    vacancy = result.scalar_one_or_none()
+
+    if vacancy is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vacancy not found")
+
+
+    vacancy.name = vacancy_data.name
+    vacancy.salary = vacancy_data.salary
+    vacancy.description = vacancy_data.description
+    vacancy.busyness = vacancy_data.busyness
+    vacancy.experience = vacancy_data.experience
+
+    await db.commit()
+    await db.refresh(vacancy)
+
+    return VacancyResponse(id=vacancy.id, name=vacancy.name)
+
+
+async def delete_vacancy(db: AsyncSession, vacancy_id: uuid.UUID, user_id: uuid.UUID):
+    statement = select(VacancyModel).where(VacancyModel.id == vacancy_id)
+    result = await db.execute(statement)
+    vacancy = result.scalar_one_or_none()
+
+    if vacancy is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vacancy not found")
+
+    await db.delete(vacancy)
+    await db.commit()
+
+    return {"detail": "Vacancy deleted successfully"}
 
 

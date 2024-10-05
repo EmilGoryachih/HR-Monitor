@@ -80,3 +80,12 @@ async def get_current_employer_user(current_user: UserBasicResponse = Depends(ge
         )
     return current_user
 
+
+async def get_current_owner_user(current_user: UserBasicResponse = Depends(get_current_user)):
+    if current_user.role != "owner":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    return current_user
+
