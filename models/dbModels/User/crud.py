@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .user import UserModel, RoleEnum
-from ...dtoModels.userDTO import User
+from ...dtoModels.userDTO import UserDTO
 from sqlalchemy.future import select
 
 
@@ -27,7 +27,7 @@ class UserResponse(BaseModel):
         orm_mode = True
 
 
-async def create_user(db: AsyncSession, user: User):
+async def create_user(db: AsyncSession, user: UserDTO):
     db_user = UserModel(
         name=user.name,
         surname=user.surname,

@@ -4,7 +4,7 @@ import datetime
 from models.dbModels.User.user import RoleEnum
 
 
-class User(BaseModel):
+class UserDTO(BaseModel):
     name: str
     surname: str
     email: str

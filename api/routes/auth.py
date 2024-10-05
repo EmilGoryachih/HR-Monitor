@@ -73,9 +73,19 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(b
 
 
 async def get_current_employer_user(current_user: UserBasicResponse = Depends(get_current_user)):
-    if current_user.role != "employer":
+    if current_user.role != "employer" and current_user.role != "owner":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough permissions"
         )
     return current_user
+
+
+async def get_current_owner_user(current_user: UserBasicResponse = Depends(get_current_user)):
+    if current_user.role != "owner":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    return current_user
+
