@@ -30,7 +30,7 @@ class UserModel(BaseModel):
     birth_date = Column(Date, nullable=True)
     role = Column(SQLAEnum(RoleEnum), default=RoleEnum.EMPLOYEE, nullable=False)
 
-    vacancies = relationship('VacancyModel', secondary=vacancy_user_association, back_populates='applicants')
+    responded_vacancies = relationship("VacancyModel", secondary="vacancy_user_association", back_populates="responded_users")
 
     def set_password(self, password: str):
         self.password = pwd_context.hash(password)

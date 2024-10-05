@@ -34,6 +34,6 @@ class VacancyModel(BaseModel):
     experience = Column(SQLAEnum(Experience), nullable=True)
     busyness = Column(ARRAY(SQLAEnum(Busyness)), nullable=True)
 
-    applicants = relationship('UserModel', secondary=vacancy_user_association, back_populates='vacancies')
+    responded_users = relationship("UserModel", secondary=vacancy_user_association, back_populates="responded_vacancies")
 
 

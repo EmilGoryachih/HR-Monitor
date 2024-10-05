@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.dtoModels.vacancyDTO import VacancyDTO
-from models.dbModels.Vacancy.crud import create_vacancy, respond_to_vacancy
+from models.dbModels.Vacancy.crud import create_vacancy, respond_to_vacancy, get_responded_users
 from models.dbModels.Vacancy.crud import VacancyResponse
 from models.dbModels.User.crud import UserBasicResponse
 from .auth import get_current_employer_user, get_current_user
@@ -40,4 +40,22 @@ async def respond_to_vacancy_endpoint(vacancy_id: UUID, db: AsyncSession = Depen
         raise http_ex
     except Exception as e:
         print(f"Error while responding to vacancy: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@router.get("/respondedUsers/{vacancy_id}", response_model=list[UserBasicResponse])
+async def get_responded_users_endpoint(vacancy_id: UUID, db: AsyncSession = Depends(fastapi_get_db),
+                                       current_user: UserBasicResponse = Depends(get_current_employer_user)):
+    try:
+        # Получаем список пользователей, откликнувшихся на вакансию
+        responded_users = await get_responded_users(db, vacancy_id)
+
+        if not responded_users:
+            raise HTTPException(status_code=404, detail="No users found for this vacancy")
+
+        return responded_users
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        print(f"Error while fetching responded users: {e}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

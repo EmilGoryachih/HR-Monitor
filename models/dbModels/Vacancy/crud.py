@@ -3,8 +3,10 @@ import uuid
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
+from sqlalchemy.orm import joinedload
 
 from .vacancy import VacancyModel
+from ..User.crud import UserBasicResponse
 from ..vacancy_user_relation import vacancy_user_association
 from ...dtoModels.vacancyDTO import VacancyDTO
 
@@ -46,5 +48,22 @@ async def respond_to_vacancy(db: AsyncSession, vacancy_id: uuid.UUID, user_id: u
         return True
 
     return False
+
+
+async def get_responded_users(db: AsyncSession, vacancy_id: uuid.UUID) -> list[UserBasicResponse]:
+    # Проверим, существует ли вакансия
+    statement = select(VacancyModel).where(VacancyModel.id == vacancy_id).options(
+        joinedload(VacancyModel.responded_users)  # Загрузка связанных пользователей
+    )
+    result = await db.execute(statement)
+    vacancy = result.scalars().first()  # Изменение здесь
+
+    if vacancy:
+        # Получаем всех пользователей, откликнувшихся на вакансию
+        users = vacancy.responded_users
+        return [UserBasicResponse(id=user.id, name=user.name, surname=user.surname, phone=user.phone, email=user.email, role=user.role)
+                for user in users]
+
+    return []
 
 
